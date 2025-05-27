@@ -46,7 +46,9 @@ class SnakeImit(Utils):
         
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
 
-        print(f"Training Dataset: {self.data_module.train_ds.__report__()}")
+        print(f"\nTraining Dataset: {self.data_module.train_ds.__report__()}")
+        print(f"\nValidation Dataset: {self.data_module.val_ds.__report__()}")
+        print(f"\nTesting Dataset: {self.data_module.test_ds.__report__()}")
         print(f'\nModel: {self.model}')
         print(f'Total number of parameters: {sum([p.numel() for p in self.model.parameters()])}')
         print(f'Number of classes: {len(self.data_module.train_ds.classes)}')
