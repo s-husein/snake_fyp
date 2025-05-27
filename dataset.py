@@ -3,6 +3,8 @@ import os
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from paths import *
+import random
+import numpy as np
 
 
 class DepthImageDataset(Dataset):
@@ -28,6 +30,18 @@ class DepthImageDataset(Dataset):
     @property
     def classes(self):
         return self.data['direction'].unique()
+    
+    def __getrawimage__(self):
+        idx = random.randint(0, self.__len__()-1)
+        img_path = os.path.join(self.image_dir, self.data.iloc[idx]['depth_image'])
+        return np.array(Image.open(img_path))
+    
+    def __report__(self):
+        return f'''\nDataset size: {self.__len__()}\n
+                {self.data['direction'].value_counts()}'''
+
+
+
     
 
 class DepthImageDataModule:

@@ -22,18 +22,17 @@ class Params:
         self.test_batch_size = 32
         self.val_batch_size = 32
         self.test_trans = tf.Compose([
-            tf.Resize((36,18)),
+            tf.Resize((18, 36)),
             tf.ToTensor(),
             tf.Normalize([0.5], [0.5])
         ])
         self.train_trans = tf.Compose([
-            tf.RandomResizedCrop((36, 18)),
+            tf.Resize((18, 36)),
             tf.ToTensor(),
-            tf.ConvertImageDtype(),
             tf.Normalize([0.5], [0.5]),
         ])
         self.val_trans = tf.Compose([
-            tf.RandomResizedCrop((36, 18)),
+            tf.Resize((18, 36)),
             tf.ToTensor(),
             tf.Normalize([0.5], [0.5]),
         ])

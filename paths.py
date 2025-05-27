@@ -38,6 +38,7 @@ def create_dirs():
                 configs = {
                             'status': 'not_started',
                             'best_val_loss': 10.0,
+                            'epochs': 0
                         }
                 with open(f'{MISC_DIR}/misc.yaml', 'w') as file:
                     yaml.safe_dump(configs, file)

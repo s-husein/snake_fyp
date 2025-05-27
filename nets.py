@@ -11,9 +11,6 @@ def make_cnn(dataset, hid_layers = [64, 64],
     img = dataset.__getitem__(0)[0]
     input_shape = img.shape
 
-    print(input_shape)
-
-
     num_of_classes = len(dataset.classes)
 
     layers = []

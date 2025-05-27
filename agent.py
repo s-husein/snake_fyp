@@ -1,14 +1,10 @@
 import torch
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
-import torchvision.transforms.v2 as tf
-from tqdm import tqdm
 from nets import make_cnn
 from dataset import DepthImageDataModule
 from paths import *
 import matplotlib.pyplot as plt
-import random
-from torch.optim.lr_scheduler import CosineAnnealingLR
 from utils import Utils
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
@@ -33,16 +29,12 @@ class SnakeImit(Utils):
 
         self.criterion = CrossEntropyLoss()
         self.check_status()
+        print('im here')
         self.acc_param = False
         if self.params.metric_param in ['train_acc', 'val_acc']:
             self.acc_param = True
-    
-    def to_one_hot(self, x, length):
-        batch_size = x.size(0)
-        x_one_hot = torch.zeros(batch_size, length)
-        for i in range(batch_size):
-            x_one_hot[i, x[i]] = 1.0
-        return x_one_hot
+
+        self.create_model()
     
     def create_model(self):
         if hasattr(self.params, 'custom_model'):
@@ -54,10 +46,12 @@ class SnakeImit(Utils):
         
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
 
-        print(f'Model: {self.model}')
+        print(f"Training Dataset: {self.data_module.train_ds.__report__()}")
+        print(f'\nModel: {self.model}')
+        print(f'Total number of parameters: {sum([p.numel() for p in self.model.parameters()])}')
         print(f'Number of classes: {len(self.data_module.train_ds.classes)}')
-        print(f'Input image size: {self.data_module.train_ds.__getitem__(0)[0].shape}')
-        print(f'total number of parameters: {sum([p.numel() for p in self.model.parameters()])}')
+        print(f'Input image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}')
+        print(f'Transformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}')
         
 
     def train(self):
