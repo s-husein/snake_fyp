@@ -1,7 +1,8 @@
 from torchvision import disable_beta_transforms_warning
 disable_beta_transforms_warning()
 import torchvision.transforms.v2 as tf
-from agent import SnakeImit, pu
+from agent import SnakeImit
+from paths import MISC_DIR
 
 class Params:
     def __init__(self):
@@ -39,6 +40,23 @@ class Params:
         self.plot_params = ["Training Loss", "Training Accuracy", "Validation Loss", 'Validation Accuracy']
 
 params = Params()
+
+def params_to_text(params):
+    lines = ["Training Configuration:\n"]
+    for key, value in vars(params).items():
+        if isinstance(value, tf.Compose):
+            transform_list = [t.__class__.__name__ for t in value.transforms]
+            lines.append(f"{key}: {transform_list}")
+        elif key == "custom_model" and value is not None:
+            lines.append(f"{key}: {value.__class__.__name__}")
+        else:
+            lines.append(f"{key}: {value}")
+    text = "\n".join(lines)
+    with open(f'{MISC_DIR}/hyperparams.txt', "w") as f:
+        f.write(text)
+
+params_to_text(params)
+
 
 agent = SnakeImit(params)
 
