@@ -1,2 +1,0 @@
-Training Loss,Training Accuracy,Validation Loss,Validation Accuracy
-1.429,0.383,1.976,0.162
