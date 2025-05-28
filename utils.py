@@ -66,7 +66,7 @@ class Utils:
             file.close()
             self.write_file(self.plot_file, ','.join(self.params.plot_params)+'\n')
             self.configs['status'] = 'in_progress'
-            with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
+            with open(f'{MISC_DIR}/hyperparams.txt', 'w') as file:
                 file.write(f'Training started on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}\n')
             return
         elif status == 'in_progress':

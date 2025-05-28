@@ -30,12 +30,11 @@ class SnakeImit(Utils):
                                                 val_batch_size= self.params.val_batch_size)
 
         self.criterion = CrossEntropyLoss()
-        self.check_status()
-        print('im here')
         self.acc_param = False
         if self.params.metric_param in ['train_acc', 'val_acc']:
             self.acc_param = True
 
+        self.check_status()
         self.create_model()
     
     def create_model(self):
@@ -54,8 +53,9 @@ class SnakeImit(Utils):
         \nModel: {self.model}
         \nTotal number of parameters: {sum([p.numel() for p in self.model.parameters()])}
         \nNumber of classes: {len(self.data_module.train_ds.classes)}
+        \nClasses: {self.data_module.train_ds.classes}
         \nInput image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}
-        \nTransformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}'''
+        \nTransformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}\n'''
 
         print(text)
 
@@ -81,8 +81,12 @@ class SnakeImit(Utils):
             self.save_check_interval(epoch=epoch+1, interval=1, queue_size=30)
             self.save_best_model(round(val_loss, 4))
 
+        
+        
+
         with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
-            file.write(f'\nTraining finished on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}')
+            file.write(f'''\nTotal training time: {time.strftime("%H:%M:%S", time.gmtime(self.configs['total_elapsed_seconds']))}
+                       \n\nTraining stopped on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}''')
 
 
         print("Evaluating on test set...")

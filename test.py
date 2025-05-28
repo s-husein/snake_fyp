@@ -1,6 +1,5 @@
-import datetime as dt
+from paths import MISC_DIR
 
-
-x = f'asdfasdf {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}'
-
-print(x)
+with open(f'{MISC_DIR}/hyperparams.txt', 'r+') as file:
+    file.seek(2)
+    file.write("ya ali")
