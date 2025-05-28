@@ -51,7 +51,7 @@ def params_to_text(params):
             lines.append(f"{key}: {value.__class__.__name__}")
         else:
             lines.append(f"{key}: {value}")
-    text = "\n".join(lines)
+    text = "\n\n".join(lines)
     with open(f'{MISC_DIR}/hyperparams.txt', "w") as f:
         f.write(text)
 

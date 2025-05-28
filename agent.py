@@ -46,14 +46,20 @@ class SnakeImit(Utils):
         
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
 
-        print(f"\nTraining Dataset: {self.data_module.train_ds.__report__()}")
-        print(f"\nValidation Dataset: {self.data_module.val_ds.__report__()}")
-        print(f"\nTesting Dataset: {self.data_module.test_ds.__report__()}")
-        print(f'\nModel: {self.model}')
-        print(f'Total number of parameters: {sum([p.numel() for p in self.model.parameters()])}')
-        print(f'Number of classes: {len(self.data_module.train_ds.classes)}')
-        print(f'Input image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}')
-        print(f'Transformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}')
+        text = f'''\nTraining Dataset: {self.data_module.train_ds.__report__()}
+        \nValidation Dataset: {self.data_module.val_ds.__report__()}
+        \nTesting Dataset: {self.data_module.test_ds.__report__()}"
+        \nModel: {self.model}
+        \nTotal number of parameters: {sum([p.numel() for p in self.model.parameters()])}
+        \nNumber of classes: {len(self.data_module.train_ds.classes)}
+        \nInput image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}
+        \nTransformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}'''
+
+        print(text)
+
+        with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
+            file.write(text)
+
         
 
     def train(self):
