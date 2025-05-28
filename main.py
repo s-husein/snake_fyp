@@ -52,7 +52,7 @@ def params_to_text(params):
         else:
             lines.append(f"{key}: {value}")
     text = "\n\n".join(lines)
-    with open(f'{MISC_DIR}/hyperparams.txt', "w") as f:
+    with open(f'{MISC_DIR}/hyperparams.txt', "+a") as f:
         f.write(text)
 
 params_to_text(params)
@@ -64,6 +64,7 @@ agent = SnakeImit(params)
 # print(f'validation dataset size: {len(agent.dataset.val_ds)}')
 
 agent.train()
+
 
 
 

@@ -1,4 +1,6 @@
-from torch.optim import Adam
+import datetime as dt
 
 
-x = Adam
+x = f'asdfasdf {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}'
+
+print(x)

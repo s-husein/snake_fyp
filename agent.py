@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from utils import Utils
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
+import datetime as dt
+import time
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -67,16 +69,20 @@ class SnakeImit(Utils):
         epochs = self.configs['epochs']
 
         for epoch in range(epochs, self.params.epochs):
+            self.prev_time = time.time()
             print(f"\nEpoch {epoch+1}/{self.params.epochs}")
 
             train_loss, train_acc = self._train_one_epoch()
             val_loss, val_acc = self._validate()
-
+            self.configs['total_elapsed_seconds'] += int(time.time() - self.prev_time)
             print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f} | Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")\
             
             self.write_plot_data(list(map(lambda y: round(y, 3), [train_loss, train_acc, val_loss, val_acc])))
             self.save_check_interval(epoch=epoch+1, interval=1, queue_size=30)
             self.save_best_model(round(val_loss, 4))
+
+        with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
+            file.write(f'\nTraining finished on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}')
 
 
         print("Evaluating on test set...")

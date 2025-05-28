@@ -8,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import shutil
+import datetime as dt
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -64,8 +65,9 @@ class Utils:
             file = open(self.plot_file, 'w')
             file.close()
             self.write_file(self.plot_file, ','.join(self.params.plot_params)+'\n')
-            self.configs['current_epochs'] = 0
             self.configs['status'] = 'in_progress'
+            with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
+                file.write(f'Training started on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}\n')
             return
         elif status == 'in_progress':
             q = str(input('\nDo you want to continue the training (y/n)\nCaution: starting new training will remove all previous checkpoints and plot data..: '))
