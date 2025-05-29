@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import sys
 import shutil
 import datetime as dt
+import torchvision.transforms as tf
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -66,9 +67,7 @@ class Utils:
             file.close()
             self.write_file(self.plot_file, ','.join(self.params.plot_params)+'\n')
             self.configs['status'] = 'in_progress'
-            with open(f'{MISC_DIR}/hyperparams.txt', 'w') as file:
-                file.write(f'Training started on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}\n')
-            return
+            self.params_to_text()
         elif status == 'in_progress':
             q = str(input('\nDo you want to continue the training (y/n)\nCaution: starting new training will remove all previous checkpoints and plot data..: '))
             if q == 'n':
@@ -91,6 +90,20 @@ class Utils:
                     file.close()
         return
         
+    def params_to_text(self):
+        lines = [f'Training started on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}\n']
+        lines.append("Training Configuration:\n")
+        for key, value in vars(self.params).items():
+            if isinstance(value, tf.Compose):
+                transform_list = [t.__class__.__name__ for t in value.transforms]
+                lines.append(f"{key}: {transform_list}")
+            elif key == "custom_model" and value is not None:
+                lines.append(f"{key}: {value.__class__.__name__}")
+            else:
+                lines.append(f"{key}: {value}")
+        text = "\n\n".join(lines)
+        with open(f'{MISC_DIR}/hyperparams.txt', "w") as f:
+            f.write(text)
 
     def write_plot_data(self, data):
         str_data = ','.join(map(str, data))
