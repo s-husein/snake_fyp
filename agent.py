@@ -34,8 +34,9 @@ class SnakeImit(Utils):
         if self.params.metric_param in ['train_acc', 'val_acc']:
             self.acc_param = True
 
-        self.check_status()
+
         self.create_model()
+        self.check_status()
     
     def create_model(self):
         if hasattr(self.params, 'custom_model'):
@@ -46,21 +47,22 @@ class SnakeImit(Utils):
                                 batch_norm=self.params.batch_norm, conv_layers=self.params.conv_layers, dropout=self.params.dropout).to(pu)
         
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
+        if self.configs['status'] == 'not_started':
+            self.params_to_text()
+            text = f'''\nTraining Dataset: {self.data_module.train_ds.__report__()}
+            \nValidation Dataset: {self.data_module.val_ds.__report__()}
+            \nTesting Dataset: {self.data_module.test_ds.__report__()}"
+            \nModel: {self.model}
+            \nTotal number of parameters: {sum([p.numel() for p in self.model.parameters()])}
+            \nNumber of classes: {len(self.data_module.train_ds.classes)}
+            \nClasses: {self.data_module.train_ds.classes}
+            \nInput image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}
+            \nTransformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}\n'''
 
-        text = f'''\nTraining Dataset: {self.data_module.train_ds.__report__()}
-        \nValidation Dataset: {self.data_module.val_ds.__report__()}
-        \nTesting Dataset: {self.data_module.test_ds.__report__()}"
-        \nModel: {self.model}
-        \nTotal number of parameters: {sum([p.numel() for p in self.model.parameters()])}
-        \nNumber of classes: {len(self.data_module.train_ds.classes)}
-        \nClasses: {self.data_module.train_ds.classes}
-        \nInput image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}
-        \nTransformed image size (channels, height, width): {self.data_module.train_ds.__getitem__(0)[0].shape}\n'''
+            print(text)
 
-        print(text)
-
-        with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
-            file.write(text)
+            with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
+                file.write(text)
 
         
 

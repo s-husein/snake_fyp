@@ -67,7 +67,7 @@ class Utils:
             file.close()
             self.write_file(self.plot_file, ','.join(self.params.plot_params)+'\n')
             self.configs['status'] = 'in_progress'
-            self.params_to_text()
+            return
         elif status == 'in_progress':
             q = str(input('\nDo you want to continue the training (y/n)\nCaution: starting new training will remove all previous checkpoints and plot data..: '))
             if q == 'n':
