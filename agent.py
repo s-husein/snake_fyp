@@ -91,6 +91,8 @@ class SnakeImit(Utils):
 
         print("Evaluating on test set...")
         self._test_and_plot()
+        self.save_report_pdf()
+
 
     def _train_one_epoch(self):
         self.model.train()
