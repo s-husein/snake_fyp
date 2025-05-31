@@ -66,7 +66,6 @@ class Utils:
             file = open(self.plot_file, 'w')
             file.close()
             self.write_file(self.plot_file, ','.join(self.params.plot_params)+'\n')
-            self.configs['status'] = 'in_progress'
             return
         elif status == 'in_progress':
             q = str(input('\nDo you want to continue the training (y/n)\nCaution: starting new training will remove all previous checkpoints and plot data..: '))
@@ -91,8 +90,10 @@ class Utils:
         return
         
     def params_to_text(self):
-        lines = [f'Training started on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}\n']
-        lines.append("Training Configuration:\n")
+        lines = [f'Training started on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}']
+        lines.append(40*"===")
+        lines.append("Training Configuration:")
+        lines.append(40*"===")
         for key, value in vars(self.params).items():
             if isinstance(value, tf.Compose):
                 transform_list = [t.__class__.__name__ for t in value.transforms]
@@ -101,7 +102,7 @@ class Utils:
                 lines.append(f"{key}: {value.__class__.__name__}")
             else:
                 lines.append(f"{key}: {value}")
-        text = "\n\n".join(lines)
+        text = "\n".join(lines)
         with open(f'{MISC_DIR}/hyperparams.txt', "w") as f:
             f.write(text)
 
@@ -160,6 +161,10 @@ class Utils:
         if not(epoch % interval) and epoch > 0:
             if epoch >= self.params.epochs-1:
                 self.configs['status'] = 'finished'
+            
+            if self.configs['status'] == 'not_started':
+                self.configs['status'] = 'in_progress'
+
             checkpath = self.create_checkpoint_file(epoch)
             self.save_checkpoint(epoch, checkpath)
             self.save_plot()

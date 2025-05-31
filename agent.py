@@ -35,8 +35,8 @@ class SnakeImit(Utils):
             self.acc_param = True
 
 
-        self.create_model()
         self.check_status()
+        self.create_model()
     
     def create_model(self):
         if hasattr(self.params, 'custom_model'):
@@ -49,11 +49,11 @@ class SnakeImit(Utils):
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
         if self.configs['status'] == 'not_started':
             self.params_to_text()
-            text = f'''\nTraining Dataset: {self.data_module.train_ds.__report__()}
-            \nValidation Dataset: {self.data_module.val_ds.__report__()}
-            \nTesting Dataset: {self.data_module.test_ds.__report__()}"
-            \nModel: {self.model}
-            \nTotal number of parameters: {sum([p.numel() for p in self.model.parameters()])}
+            text = f'''\n{30*'=='}\nTraining Dataset: {self.data_module.train_ds.__report__()}
+            \n{30*'=='}\nValidation Dataset: {self.data_module.val_ds.__report__()}
+            \n{30*'=='}\nTesting Dataset: {self.data_module.test_ds.__report__()}"
+            \n{30*'=='}\nModel: {self.model}
+            \n{30*'=='}\nTotal number of parameters: {sum([p.numel() for p in self.model.parameters()])}
             \nNumber of classes: {len(self.data_module.train_ds.classes)}
             \nClasses: {self.data_module.train_ds.classes}
             \nInput image size (height, width): {self.data_module.train_ds.__getrawimage__().shape}
@@ -82,13 +82,11 @@ class SnakeImit(Utils):
             self.write_plot_data(list(map(lambda y: round(y, 3), [train_loss, train_acc, val_loss, val_acc])))
             self.save_check_interval(epoch=epoch+1, interval=1, queue_size=30)
             self.save_best_model(round(val_loss, 4))
-
-        
         
 
         with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
             file.write(f'''\nTotal training time: {time.strftime("%H:%M:%S", time.gmtime(self.configs['total_elapsed_seconds']))}
-                       \n\nTraining stopped on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}''')
+                       \n{40*'=='}\nTraining stopped on {dt.datetime.now().strftime("Date: %d/%m/%Y, %a, at time: %H:%M")}\n{40*'=='}''')
 
 
         print("Evaluating on test set...")
@@ -151,8 +149,13 @@ class SnakeImit(Utils):
                 all_labels.extend(labels.cpu().numpy())
 
         # Print classification report
-        print("Classification Report:")
-        print(classification_report(all_labels, all_preds, target_names=self.data_module.train_ds.classes))
+        text = f'''\nFinale classification report based on testing on best saved model:"
+        {classification_report(all_labels, all_preds, target_names=self.data_module.train_ds.classes)}'''
+
+        with open(f'{MISC_DIR}/hyperparams.txt', '+a') as file:
+            file.write(text)
+
+        print(text)
 
         # Compute confusion matrix
         cm = confusion_matrix(all_labels, all_preds)

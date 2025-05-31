@@ -16,7 +16,7 @@ class Params:
         self.dropout = None
         self.hid_layers = [256, 256]
         self.lr = 1e-3
-        self.epochs = 10
+        self.epochs = 5
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
         self.train_batch_size = 16
