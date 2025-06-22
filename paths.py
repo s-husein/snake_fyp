@@ -4,13 +4,13 @@ import yaml
 
 
 IMAGE_DIR = subprocess.check_output(
-    "find ~ -type d -name depth_images",
+    "find /home/$USER -maxdepth 1 -type d -name depth_images",
     shell=True,
     executable="/bin/bash"
 ).decode().strip()
 
 WORKING_DIR = subprocess.check_output(
-    "find ~ -type d -name snake_fyp",
+    "find /home/$USER -maxdepth 1 -type d -name snake_fyp",
     shell=True,
     executable="/bin/bash"
 ).decode().strip()

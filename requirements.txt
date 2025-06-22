@@ -7,3 +7,4 @@ pandas
 pillow
 fpdf
 pyyaml
+torchvision
