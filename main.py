@@ -15,7 +15,7 @@ class Params:
         self.batch_norm = False
         self.dropout = None
         self.hid_layers = [256, 256]
-        self.lr = 1e-3
+        self.lr = 1e-4
         self.epochs = 5
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
@@ -59,9 +59,6 @@ params_to_text(params)
 
 
 agent = SnakeImit(params)
-
-# print(f'training dataset size: {len(agent.dataset.train_ds)}')
-# print(f'validation dataset size: {len(agent.dataset.val_ds)}')
 
 agent.train()
 
