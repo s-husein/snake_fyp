@@ -13,13 +13,13 @@ class Params:
         self.pool_after_layers = 1
         self.act_fn = 'relu'
         self.batch_norm = False
-        self.dropout = None
+        self.dropout = 0.5
         self.hid_layers = [256, 256]
         self.lr = 1e-4
-        self.epochs = 5
+        self.epochs = 100
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
-        self.train_batch_size = 16
+        self.train_batch_size = 64
         self.test_batch_size = 32
         self.val_batch_size = 32
         self.test_trans = tf.Compose([
