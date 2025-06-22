@@ -50,6 +50,9 @@ class DepthImageDataModule:
                  val_batch_size = 32):
         num_workers = os.cpu_count()
 
+        if num_workers >= 12:
+            num_workers = 12
+
         self.train_ds = DepthImageDataset(os.path.join(SPLIT_DIR, 'train.csv'), IMAGE_DIR, train_trans)
         self.val_ds = DepthImageDataset(os.path.join(SPLIT_DIR, 'val.csv'), IMAGE_DIR, val_trans)
         self.test_ds = DepthImageDataset(os.path.join(SPLIT_DIR, 'test.csv'), IMAGE_DIR, test_trans)
