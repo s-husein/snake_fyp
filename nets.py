@@ -4,7 +4,7 @@ from torchvision.datasets import ImageFolder
 
 
 def make_cnn(dataset, hid_layers = [64, 64],
-            act_fn='relu', max_pool = None, pooling_after_layers = 2, dropout = 0.2, batch_norm=True,
+            act_fn='relu', max_pool = None, avg_pool = None, pooling_after_layers = 2, dropout = 0.2, batch_norm=True,
             groups =1, bias=False, conv_layers=[[32, 3, 1],
                                                 [16, 3, 1]]):
     
@@ -37,6 +37,13 @@ def make_cnn(dataset, hid_layers = [64, 64],
             out_w = (inp_w - max_pool[0])//max_pool[1] + 1
             inp_h = out_h
             inp_w = out_w
+        if avg_pool is not None:
+            layers.append(nn.AvgPool2d(avg_pool[0], avg_pool[1]))
+            out_h = (inp_h - avg_pool[0])//avg_pool[1] + 1
+            out_w = (inp_w - avg_pool[0])//avg_pool[1] + 1
+            inp_h = out_h
+            inp_w = out_w
+            print(f'h = {inp_h}, w = {inp_w}, c = {in_chann}')
         in_chann = out_chann
 
     layers.append(nn.Flatten())
