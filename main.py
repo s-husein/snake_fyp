@@ -8,33 +8,34 @@ class Params:
     def __init__(self):
         self.name = 'snake_imitation'
         self.schedular = False
-        self.conv_layers = [[4, 5, 5]]
+        self.conv_layers = [[8, 3, 1],
+                            [16, 3, 3]]
         self.avg_pool = [2, 2]
         self.max_pool = None
         self.pool_after_layers = 1
         self.act_fn = 'relu'
         self.batch_norm = False
-        self.dropout = 0.5
+        self.dropout = 0.3
         self.hid_layers = [256, 256]
         self.lr = 1e-4
-        self.epochs = 100
+        self.epochs = 200
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
-        self.train_batch_size = 64
-        self.test_batch_size = 32
-        self.val_batch_size = 32
+        self.train_batch_size = 256
+        self.test_batch_size = 128
+        self.val_batch_size = 128
         self.test_trans = tf.Compose([
-            tf.Resize((18, 36)),
+            tf.Resize((180, 360)),
             tf.ToTensor(),
             tf.Normalize([0.5], [0.5])
         ])
         self.train_trans = tf.Compose([
-            tf.Resize((18, 36)),
+            tf.Resize((180, 360)),
             tf.ToTensor(),
             tf.Normalize([0.5], [0.5]),
         ])
         self.val_trans = tf.Compose([
-            tf.Resize((18, 36)),
+            tf.Resize((180, 360)),
             tf.ToTensor(),
             tf.Normalize([0.5], [0.5]),
         ])
