@@ -8,3 +8,5 @@ pillow
 fpdf
 pyyaml
 torchvision
+google-api-python-client
+google-auth-oauthlib
