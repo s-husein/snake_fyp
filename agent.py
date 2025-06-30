@@ -10,6 +10,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 import datetime as dt
 import time
+from drive import GoogleDrive
 
 pu = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -33,6 +34,8 @@ class SnakeImit(Utils):
         self.acc_param = False
         if self.params.metric_param in ['train_acc', 'val_acc']:
             self.acc_param = True
+
+        self.drive = GoogleDrive(MISC_DIR)
 
 
         self.check_status()
@@ -92,6 +95,9 @@ class SnakeImit(Utils):
         print("Evaluating on test set...")
         self._test_and_plot()
         self.save_report_pdf()
+
+        if self.configs['status'] == 'finished':
+            self.drive.upload_folder()
 
 
     def _train_one_epoch(self):
