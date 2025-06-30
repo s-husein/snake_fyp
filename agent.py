@@ -46,7 +46,7 @@ class SnakeImit(Utils):
             pass
         else:
             self.model = make_cnn(dataset=self.data_module.train_ds, hid_layers=self.params.hid_layers, act_fn=self.params.act_fn,
-                                max_pool=self.params.max_pool, pooling_after_layers=self.params.pool_after_layers,
+                                max_pool=self.params.max_pool, avg_pool=self.params.avg_pool, pooling_after_layers=self.params.pool_after_layers,
                                 batch_norm=self.params.batch_norm, conv_layers=self.params.conv_layers, dropout=self.params.dropout).to(pu)
         
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
