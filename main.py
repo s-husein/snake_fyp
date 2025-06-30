@@ -9,7 +9,8 @@ class Params:
         self.name = 'snake_imitation'
         self.schedular = False
         self.conv_layers = [[4, 5, 5]]
-        self.max_pool = [2, 2]
+        self.avg_pool = [2, 2]
+        self.max_pool = None
         self.pool_after_layers = 1
         self.act_fn = 'relu'
         self.batch_norm = False
