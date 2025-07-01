@@ -60,9 +60,9 @@ class DepthImageDataModule:
         self.train_loader = DataLoader(self.train_ds, batch_size=train_batch_size, shuffle=True, 
                                        num_workers=num_workers, pin_memory=True)
         
-        self.val_loader = DataLoader(self.val_ds, batch_size=val_batch_size, shuffle=False,
+        self.val_loader = DataLoader(self.val_ds, batch_size=val_batch_size, shuffle=True,
                                      num_workers=num_workers, pin_memory=True)
         
-        self.test_loader = DataLoader(self.test_ds, batch_size=test_batch_size, shuffle=False,
+        self.test_loader = DataLoader(self.test_ds, batch_size=test_batch_size, shuffle=True,
                                       num_workers=num_workers, pin_memory=True)
 
