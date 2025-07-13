@@ -8,7 +8,7 @@ import numpy as np
 
 
 class DepthImageDataset(Dataset):
-    def __init__(self, csv_file, image_dir, transform=None):
+    def __init__(self, csv_file, image_dir, sequence_len = 5, transform=None):
         self.data = pd.read_csv(csv_file)
         self.image_dir = image_dir
         self.transform = transform
@@ -20,12 +20,16 @@ class DepthImageDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        img_name = os.path.join(self.image_dir, self.data.iloc[idx]['depth_image'])
-        image = Image.open(img_name).convert('L')  # grayscale
-        label = self.data.iloc[idx]['label_idx']
-        if self.transform:
-            image = self.transform(image)
-        return image, label
+        first_img = os.path.join(self.image_dir, self.data.iloc[0]['depth_image'])
+        
+
+
+        # img_name = os.path.join(self.image_dir, self.data.iloc[idx]['depth_image'])
+        # image = Image.open(img_name).convert('L')  # grayscale
+        # label = self.data.iloc[idx]['label_idx']
+        # if self.transform:
+        #     image = self.transform(image)
+        # return image, label
     
     @property
     def classes(self):

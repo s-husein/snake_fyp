@@ -8,15 +8,14 @@ class Params:
     def __init__(self):
         self.name = 'snake_imitation'
         self.schedular = False
-        self.conv_layers = [[8, 3, 1],
-                            [16, 3, 3]]
+        self.conv_layers = None
         self.avg_pool = [2, 2]
         self.max_pool = None
         self.pool_after_layers = 1
         self.act_fn = 'relu'
         self.batch_norm = False
         self.dropout = 0.3
-        self.hid_layers = [256, 256]
+        self.hid_layers = [512, 256]
         self.lr = 1e-4
         self.epochs = 200
         self.clip_grad = 0.5
