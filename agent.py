@@ -1,7 +1,7 @@
 import torch
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
-from nets import make_cnn
+from nets import make_cnn, make_cnn_lstm
 from dataset import DepthImageDataModule
 from paths import *
 import matplotlib.pyplot as plt
@@ -28,7 +28,9 @@ class SnakeImit(Utils):
                                                 test_trans = self.params.test_trans,
                                                 train_batch_size = self.params.train_batch_size,
                                                 test_batch_size = self.params.test_batch_size,
-                                                val_batch_size= self.params.val_batch_size)
+                                                val_batch_size= self.params.val_batch_size,
+                                                sequence_len= self.params.seq_len,
+                                                sequence_step= self.params.seq_step)
 
         self.criterion = CrossEntropyLoss()
         self.acc_param = False
@@ -45,10 +47,33 @@ class SnakeImit(Utils):
         if hasattr(self.params, 'custom_model'):
             pass
         else:
-            self.model = make_cnn(dataset=self.data_module.train_ds, hid_layers=self.params.hid_layers, act_fn=self.params.act_fn,
-                                max_pool=self.params.max_pool, avg_pool=self.params.avg_pool, pooling_after_layers=self.params.pool_after_layers,
-                                batch_norm=self.params.batch_norm, conv_layers=self.params.conv_layers, dropout=self.params.dropout).to(pu)
-        
+            if hasattr(self.params, 'model_type') and self.params.model_type == 'cnn_lstm':
+                self.model = make_cnn_lstm(
+                    dataset=self.data_module.train_ds,
+                    lstm_hidden=self.params.hid_layers[-1],
+                    lstm_layers=1,
+                    dropout=self.params.dropout,
+                    hid_layers=self.params.hid_layers,
+                    act_fn=self.params.act_fn,
+                    max_pool=self.params.max_pool,
+                    avg_pool=self.params.avg_pool,
+                    pooling_after_layers=self.params.pool_after_layers,
+                    batch_norm=self.params.batch_norm,
+                    conv_layers=self.params.conv_layers,
+                    dropout=self.params.dropout
+                ).to(pu)
+            else:
+                self.model = make_cnn(
+                    dataset=self.data_module.train_ds,
+                    hid_layers=self.params.hid_layers,
+                    act_fn=self.params.act_fn,
+                    max_pool=self.params.max_pool,
+                    avg_pool=self.params.avg_pool,
+                    pooling_after_layers=self.params.pool_after_layers,
+                    batch_norm=self.params.batch_norm,
+                    conv_layers=self.params.conv_layers,
+                    dropout=self.params.dropout
+                ).to(pu)
         self.optim = Adam(self.model.parameters(), lr=self.params.lr)
         if self.configs['status'] == 'not_started':
             self.params_to_text()

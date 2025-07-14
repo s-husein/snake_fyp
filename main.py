@@ -3,17 +3,22 @@ disable_beta_transforms_warning()
 import torchvision.transforms.v2 as tf
 from agent import SnakeImit
 from paths import MISC_DIR
+from dataset import DepthImageDataModule
+import matplotlib.pyplot as plt
 
 class Params:
     def __init__(self):
         self.name = 'snake_imitation'
+        self.model_type = 'cnn_lstm'
         self.schedular = False
-        self.conv_layers = None
-        self.avg_pool = [2, 2]
+        self.conv_layers = [4, 5, 5]
+        self.avg_pool = [32, 32]
+        self.seq_len = 10
+        self.seq_step = 5
         self.max_pool = None
         self.pool_after_layers = 1
         self.act_fn = 'relu'
-        self.batch_norm = False
+        self.batch_norm = True
         self.dropout = 0.3
         self.hid_layers = [512, 256]
         self.lr = 1e-4
@@ -40,6 +45,20 @@ class Params:
         ])
         self.plot_params = ["Training Loss", "Training Accuracy", "Validation Loss", 'Validation Accuracy']
 
+
+params = Params()
+
+data_module = DepthImageDataModule(train_trans = params.train_trans,
+                                                val_trans = params.val_trans,
+                                                test_trans = params.test_trans,
+                                                train_batch_size = params.train_batch_size,
+                                                test_batch_size = params.test_batch_size,
+                                                val_batch_size= params.val_batch_size,
+                                                sequence_len=params.seq_len,
+                                                sequence_step=params.seq_step)
+
+
+
 params = Params()
 
 def params_to_text(params):
@@ -61,7 +80,7 @@ params_to_text(params)
 
 agent = SnakeImit(params)
 
-agent.train()
+# agent.train()
 
 
 

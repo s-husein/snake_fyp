@@ -5,13 +5,16 @@ from torch.utils.data import Dataset, DataLoader
 from paths import *
 import random
 import numpy as np
+import torch
 
 
 class DepthImageDataset(Dataset):
-    def __init__(self, csv_file, image_dir, sequence_len = 5, transform=None):
+    def __init__(self, csv_file, image_dir, sequence_len = 5, transform=None, sequence_step=3):
         self.data = pd.read_csv(csv_file)
         self.image_dir = image_dir
         self.transform = transform
+        self.seq_len = sequence_len
+        self.seq_step = sequence_step
 
         self.label_to_idx = {label: idx for idx, label in enumerate(self.data['direction'].unique())}
         self.data['label_idx'] = self.data['direction'].map(self.label_to_idx)
@@ -20,16 +23,26 @@ class DepthImageDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        first_img = os.path.join(self.image_dir, self.data.iloc[0]['depth_image'])
+        seq = []
+        for i in range(self.seq_len):
+            data_idx = idx - (self.seq_len - 1 - i) * self.seq_step
+            if data_idx < 0:
+                data_idx = 0  # Clamp to start of dataset
+            img_path = os.path.join(self.image_dir, self.data.iloc[data_idx]['depth_image'])
+            image = Image.open(img_path).convert('L')  # Load grayscale image
+            if self.transform:
+                image = self.transform(image)
+            seq.append(image)
+
+        # Stack sequence into a single tensor of shape [seq_len, C, H, W]
+        sequence_tensor = torch.stack(seq, dim=0)
+
+        # Get label for the final frame in the sequence (idx)
+        label = self.data.iloc[idx]['label_idx']
+        label_tensor = torch.tensor(label, dtype=torch.float32).unsqueeze(-1)
+
+        return sequence_tensor, label_tensor
         
-
-
-        # img_name = os.path.join(self.image_dir, self.data.iloc[idx]['depth_image'])
-        # image = Image.open(img_name).convert('L')  # grayscale
-        # label = self.data.iloc[idx]['label_idx']
-        # if self.transform:
-        #     image = self.transform(image)
-        # return image, label
     
     @property
     def classes(self):
@@ -51,15 +64,15 @@ class DepthImageDataset(Dataset):
 class DepthImageDataModule:
     def __init__(self, train_trans, val_trans, test_trans,
                  train_batch_size = 32, test_batch_size = 32,
-                 val_batch_size = 32):
+                 val_batch_size = 32, sequence_len = 10, sequence_step=3):
         num_workers = os.cpu_count()
 
         if num_workers >= 12:
             num_workers = 12
 
-        self.train_ds = DepthImageDataset(os.path.join(SPLIT_DIR, 'train.csv'), IMAGE_DIR, train_trans)
-        self.val_ds = DepthImageDataset(os.path.join(SPLIT_DIR, 'val.csv'), IMAGE_DIR, val_trans)
-        self.test_ds = DepthImageDataset(os.path.join(SPLIT_DIR, 'test.csv'), IMAGE_DIR, test_trans)
+        self.train_ds = DepthImageDataset('data.csv', IMAGE_DIR, sequence_len, train_trans, sequence_step)
+        self.val_ds = DepthImageDataset('data.csv', IMAGE_DIR, sequence_len, val_trans, sequence_step)
+        self.test_ds = DepthImageDataset('data.csv', IMAGE_DIR, sequence_len, test_trans, sequence_step)
 
         self.train_loader = DataLoader(self.train_ds, batch_size=train_batch_size, shuffle=True, 
                                        num_workers=num_workers, pin_memory=True)
