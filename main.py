@@ -22,13 +22,13 @@ class Params:
         self.batch_norm = True
         self.dropout = 0.3
         self.hid_layers = [256]
-        self.lr = 1e-4
+        self.lr = 1e-3
         self.epochs = 200
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
-        self.train_batch_size = 64
-        self.test_batch_size = 32
-        self.val_batch_size = 32
+        self.train_batch_size = 256
+        self.test_batch_size = 256
+        self.val_batch_size = 256
         self.test_trans = tf.Compose([
             tf.Resize((90, 160)),
             tf.ToTensor(),
