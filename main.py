@@ -26,7 +26,7 @@ class Params:
         self.epochs = 200
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
-        self.train_batch_size = 16
+        self.train_batch_size = 64
         self.test_batch_size = 32
         self.val_batch_size = 32
         self.test_trans = tf.Compose([
