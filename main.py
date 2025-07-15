@@ -38,10 +38,10 @@ class Params:
         self.dropout = 0.3
         self.hid_layers = [256]
         self.lr = 1e-3
-        self.epochs = 200
+        self.epochs = 50
         self.clip_grad = 0.5
         self.metric_param = 'val_acc'
-        self.train_batch_size = 256
+        self.train_batch_size = 512
         self.test_batch_size = 256
         self.val_batch_size = 256
         self.test_trans = tf.Compose([

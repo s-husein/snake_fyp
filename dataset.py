@@ -67,8 +67,8 @@ class DepthImageDataModule:
                  val_batch_size = 32, sequence_len = 10, sequence_step=3):
         num_workers = os.cpu_count()
 
-        if num_workers >= 4:
-            num_workers = 4
+        if num_workers >= 8:
+            num_workers = 8
 
         self.train_ds = DepthImageDataset('data.csv', IMAGE_DIR, sequence_len, train_trans, sequence_step)
         self.val_ds = DepthImageDataset('data.csv', IMAGE_DIR, sequence_len, val_trans, sequence_step)
