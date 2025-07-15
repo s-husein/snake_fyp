@@ -5,6 +5,21 @@ from agent import SnakeImit
 from paths import MISC_DIR
 from dataset import DepthImageDataModule
 import matplotlib.pyplot as plt
+import torch
+
+class AddGaussianNoise(object):
+    def __init__(self, mean=0., std=0.05):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, tensor):
+        noise = torch.randn_like(tensor) * self.std + self.mean
+        noisy_tensor = tensor + noise
+        return torch.clamp(noisy_tensor, 0.0, 1.0) 
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(mean={self.mean}, std={self.std})"
+
 
 class Params:
     def __init__(self):
@@ -37,6 +52,7 @@ class Params:
         self.train_trans = tf.Compose([
             tf.Resize((90, 160)),
             tf.ToTensor(),
+            AddGaussianNoise(0, 0.15),
             tf.Normalize([0.5], [0.5]),
         ])
         self.val_trans = tf.Compose([
