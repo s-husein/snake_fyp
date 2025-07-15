@@ -27,9 +27,9 @@ class Params:
         self.model_type = 'cnn_lstm'
         self.schedular = False
         self.conv_layers = [[4, 5, 5]]
-        self.avg_pool = [8, 8]
+        self.avg_pool = [12, 12]
         self.lstm_layers = 2
-        self.seq_len = 10
+        self.seq_len = 15
         self.seq_step = 5
         self.max_pool = None
         self.pool_after_layers = 1
