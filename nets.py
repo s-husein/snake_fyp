@@ -9,6 +9,9 @@ def make_cnn(dataset, hid_layers=[64, 64], act_fn='relu', max_pool=None, avg_poo
     img = dataset.__getrawimage__()
     input_shape = img.shape
 
+    if len(input_shape) < 3:
+        input_shape = (1, *input_shape)
+
 
     in_chann, inp_h, inp_w = input_shape
     activation_fun = {'relu': nn.ReLU(inplace=True), 'softplus': nn.Softplus(), 'tanh': nn.Tanh(), 'elu': nn.ELU()}
@@ -74,27 +77,48 @@ def make_dnn(dataset: ImageFolder, model, hid_layers = [64, 64],
 
 
 class CNNLSTM(nn.Module):
-    def __init__(self, cnn_backbone, feature_dim, lstm_hidden=128, lstm_layers=1, num_classes=5, dropout=0.3):
+    def __init__(self, cnn_backbone, feature_dim, lstm_hidden=128, lstm_layers=1,
+                 hid_layers=[128], num_classes=5, dropout=0.3, act_fn='relu'):
         super().__init__()
         self.cnn = cnn_backbone
         self.lstm = nn.LSTM(input_size=feature_dim, hidden_size=lstm_hidden,
                             num_layers=lstm_layers, batch_first=True)
-        self.classifier = nn.Sequential(
-            nn.Dropout(dropout),
-            nn.Linear(lstm_hidden, num_classes)
-        )
+
+        activation_fun = {
+            'relu': nn.ReLU(inplace=True), 'softplus': nn.Softplus(), 'tanh': nn.Tanh(), 'elu': nn.ELU()
+        }
+
+        classifier_layers = []
+        prev_dim = lstm_hidden
+        for h_dim in hid_layers:
+            classifier_layers.append(nn.Linear(prev_dim, h_dim))
+            classifier_layers.append(activation_fun[act_fn])
+            classifier_layers.append(nn.Dropout(dropout))
+            prev_dim = h_dim
+
+        classifier_layers.append(nn.Linear(prev_dim, num_classes))
+        self.classifier = nn.Sequential(*classifier_layers)
 
     def forward(self, x):
         B, T, C, H, W = x.size()
         x = x.view(B * T, C, H, W)
-        features = self.cnn(x)  # Shape: [B*T, F]
-        features = features.view(B, T, -1)  # Shape: [B, T, F]
-        _, (hn, _) = self.lstm(features)
-        return self.classifier(hn[-1])  # [B, num_classes]
+        features = self.cnn(x)  # [B*T, F]
+        features = features.view(B, T, -1)  # [B, T, F]
+        out, (hn, cn) = self.lstm(features)
+        return self.classifier(out[:, -1])
 
 
-def make_cnn_lstm(dataset, lstm_hidden=128, lstm_layers=1, dropout=0.3, **cnn_kwargs):
+def make_cnn_lstm(dataset, lstm_hidden=128, lstm_layers=1, dropout=0.3, act_fn='relu', **cnn_kwargs):
     cnn, feat_dim = make_cnn(dataset, return_features=True, **cnn_kwargs)
     num_classes = len(dataset.classes)
-    return CNNLSTM(cnn, feat_dim, lstm_hidden, lstm_layers, num_classes, dropout)
+    return CNNLSTM(
+        cnn_backbone=cnn,
+        feature_dim=feat_dim,
+        lstm_hidden=lstm_hidden,
+        lstm_layers=lstm_layers,
+        hid_layers=cnn_kwargs.get('hid_layers', [128]),  # Reuse same hid_layers from params
+        num_classes=num_classes,
+        dropout=dropout,
+        act_fn=act_fn
+    )
         

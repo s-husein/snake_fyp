@@ -39,7 +39,7 @@ class DepthImageDataset(Dataset):
 
         # Get label for the final frame in the sequence (idx)
         label = self.data.iloc[idx]['label_idx']
-        label_tensor = torch.tensor(label, dtype=torch.float32).unsqueeze(-1)
+        label_tensor = torch.tensor(label)
 
         return sequence_tensor, label_tensor
         

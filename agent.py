@@ -50,9 +50,8 @@ class SnakeImit(Utils):
             if hasattr(self.params, 'model_type') and self.params.model_type == 'cnn_lstm':
                 self.model = make_cnn_lstm(
                     dataset=self.data_module.train_ds,
-                    lstm_hidden=self.params.hid_layers[-1],
-                    lstm_layers=1,
-                    dropout=self.params.dropout,
+                    lstm_hidden=self.params.hid_layers[0],
+                    lstm_layers=self.params.lstm_layers,
                     hid_layers=self.params.hid_layers,
                     act_fn=self.params.act_fn,
                     max_pool=self.params.max_pool,
@@ -131,7 +130,6 @@ class SnakeImit(Utils):
 
         for images, labels in self.data_module.train_loader:
             images, labels = images.to(pu), labels.to(pu)
-
             self.optim.zero_grad()
 
             outputs = self.model(images)
